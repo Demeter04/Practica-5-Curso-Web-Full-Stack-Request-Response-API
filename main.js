@@ -47,14 +47,22 @@ app.get('/api/v1/usuarios' , async (req,res) => {
     await client.connect()
 
     //  -------------------------------- CONECTAR A NUESTRA DATABASE o Documento --------------------------------
-    const db = client.db("sample_mflix")
+    const dbSample_Mflix = client.db("sample_mflix")
 
     //  -------------------------------- ACCEDER A UNA COLLECTION  --------------------------------
-    const dbusers = db.collection("users")
+    const userCollection = dbSample_Mflix.collection("users")
 
-    //  -------------------------------- EJECUTAR LA CONSULTA - SE MUESTRE COMO UN ARRAY --------------------------------
-    const listaUsers = await dbusers.find({}).toArray()
-    console.log(listaUsers)
+    //  ---------EJECUTAR LA CONSULTA DE ENCONTRAR, COMO NO SE ESPCF SE TRAEN TODOS LOS USUARIOS- == PEDIR QUE SE MUESTRE COMO UN ARRAY -----------------------
+    const usersList = await userCollection.find({}).toArray()
+    console.log(usersList)
+
+    // -------------------- CERRAR LA CONEXION A DB -----------------
+
+    await client.close()
+
+
+
+
 /*     res.send("Mi primera peticion a una libreria o API") */
     
     /* const respuesta = {
@@ -67,7 +75,11 @@ app.get('/api/v1/usuarios' , async (req,res) => {
         msg:"Lista de usuarios",
         nombre:"Oscar",
         contraseña:"1234",
-        correo: "oss@gmail.com"
+        correo: "oss@gmail.com",
+    
+        // -------------- MOSTRAR LA REQUEST --------------------------
+
+        data: usersList
     })
 })
 
@@ -87,6 +99,8 @@ app.get("/api/v1/usuarios/:cedula" , (req,res ) => {
 
 // POST - CREAR DATOS NUEVOS
 app.post("/api/v1/usuarios", (req,res) =>{
+   
+
     res.json({
 
         mensaje:"Usuario guardado",
@@ -151,10 +165,39 @@ app.get("/api/v1/perros",(req,res) => {
 // METODO PATCH, CREAR
 // BODY ES UN JSON QUE VA A LLEGAR A LA API
 
-app.post("/api/v1/usuarios/crear", (req,res) => {
-    
-    console.log(req.body)
+app.post("/api/v1/usuarios/crear", async (req,res) => {
 
+    console.log(req.body)
+    const NewUser =  req.body
+
+
+    //  -------------------------------- CONECTAR A mONGODB --------------------------------
+    await client.connect()
+
+    //  -------------------------------- CONECTAR A NUESTRA DATABASE o Documento --------------------------------
+    const dbSample_Mflix = client.db("sample_mflix")
+
+    //  -------------------------------- ACCEDER A UNA COLLECTION  --------------------------------
+    const userCollection = dbSample_Mflix.collection("users")
+
+
+    //------------------------- ALMACENAR UN USUARIO --------------------------
+
+    await userCollection.insertOne({
+        NombreUsuario: NewUser.Nombre,
+        EdadUsuario: NewUser.Edad,
+        Clave: NewUser.clave,
+        email: NewUser.email,
+        //Ubicacion: NewUser.ubicacion
+        Ubicacion:{
+            latitud: NewUser.ubicacion.latitud,
+            longitud: NewUser.ubicacion.longitud
+        }
+       
+    })
+
+    // ------------ CERRAR LA CONEXION --------------
+    await client.close()
 
     res.json({
         mensaje:"Usuario Guardado",

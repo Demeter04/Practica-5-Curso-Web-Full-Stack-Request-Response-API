@@ -13,4 +13,6 @@ const client = new MongoClient(uri, {
   }
 });
 
+// EXPORTAR LA VARIABLE CLIENT PARA LLAMAR A MONGODB EN EL ARCHIVO MAIN.JS
+// VOLVER ESA VARIABLE PUBLICA
 export default client
