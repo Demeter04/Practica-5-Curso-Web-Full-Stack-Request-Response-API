@@ -11,12 +11,13 @@ console.log("Hello world!");
 
 // NUEVA FORMA DE LLAMAR LIBRERIAS con ECMAScript 6
 // En Packaje.json  "type":"module" para importar librerias de esta nueva forma sin errrores
-import express, { response } from "express"
+import express, { json, response } from "express"
+import bodyParser from "body-parser";
 
 const app = express()
 const port = 3000 
 
-
+app.use(bodyParser.json())
 
 //"/"  RUTA DE LA API PARA eL COMANDO CON EL QUE SEAN LLAMADOS (GET, PUSH, POST, PUT, DELETE) DE  LA FUNCION ADELANTE QUE SERA ANONIMA
             // como ruta de url ejemplo: /api/v2/pokemon
@@ -68,7 +69,9 @@ app.post("/api/v1/usuarios", (req,res) =>{
 
 // PUT - ACTUALIZAR TODOS LOS DATOS DE UN ELEMENTO
 app.put("/api/v1/usuarios/:cedula",(req,res) => {
-    
+   
+    // PARAMS ES UN IDENTIFICADOR
+
     const cedula = req.params.cedula
     
     res.json({
@@ -82,6 +85,8 @@ app.put("/api/v1/usuarios/:cedula",(req,res) => {
 
 app.patch("/api/v1/usuarios/:cedula", (req,res) => {
 
+    // PARAMS ES UN IDENTIFICADOR
+
     const cedula = req.params.cedula
 
     res.json({
@@ -92,6 +97,7 @@ app.patch("/api/v1/usuarios/:cedula", (req,res) => {
 // DELETE - eliminar un elemento
 app.delete("/api/v1/usuarios/:cedula", (req,res) => {
 
+    // PARAMS ES UN IDENTIFICADOR
     const cedula = req.params.cedula
 
     res.json({
@@ -100,10 +106,35 @@ app.delete("/api/v1/usuarios/:cedula", (req,res) => {
 })
 
 // GET CON PARAMETROS LIMITADOS
+// QUERYS, VARIABLEll de CLAVE - VALOR
+// SE HACE CON REQ.QUERY 
 
-app.get("api/v1/usuarios/",() => {
+
+app.get("/api/v1/perros",(req,res) => {
     
+    console.log(req.query)
+    const limit = parseInt(req.query.limite)
+    console.log(limit)
+    res.json({
+        mensaje:"Lista de Perros",
+    })
+
 })
+
+// ENVIAR INFORMACION A TRAVES DEL BODY
+// METODO PATCH, CREAR
+// BODY ES UN JSON QUE VA A LLEGAR A LA API
+
+app.post("/api/v1/usuarios/crear", (req,res) => {
+    
+    console.log(req.body)
+
+
+    res.json({
+        mensaje:"Usuario Guardado",
+    })
+
+} )
 
 
 
