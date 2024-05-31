@@ -19,6 +19,19 @@ const port = 3000
 
 app.use(bodyParser.json())
 
+
+
+// ------------ IMPORTAR CLIENT MONGODB -------------------
+
+import client from "./db.js";
+
+
+
+
+
+
+
+
 //"/"  RUTA DE LA API PARA eL COMANDO CON EL QUE SEAN LLAMADOS (GET, PUSH, POST, PUT, DELETE) DE  LA FUNCION ADELANTE QUE SERA ANONIMA
             // como ruta de url ejemplo: /api/v2/pokemon
 
@@ -28,7 +41,20 @@ app.use(bodyParser.json())
 
 // ---------- TODA RESPUESTA ES EN JSON ----------
 
-app.get('/api/v1/usuarios' , (req,res) => {
+app.get('/api/v1/usuarios' , async (req,res) => {
+
+    //  -------------------------------- CONECTAR A mONGODB --------------------------------
+    await client.connect()
+
+    //  -------------------------------- CONECTAR A NUESTRA DATABASE o Documento --------------------------------
+    const db = client.db("sample_mflix")
+
+    //  -------------------------------- ACCEDER A UNA COLLECTION  --------------------------------
+    const dbusers = db.collection("users")
+
+    //  -------------------------------- EJECUTAR LA CONSULTA - SE MUESTRE COMO UN ARRAY --------------------------------
+    const listaUsers = await dbusers.find({}).toArray()
+    console.log(listaUsers)
 /*     res.send("Mi primera peticion a una libreria o API") */
     
     /* const respuesta = {
@@ -145,4 +171,6 @@ app.post("/api/v1/usuarios/crear", (req,res) => {
 app.listen(port, () => {
     console.log(`Escuchando desde el puerto ${port}`)
 } )
+
+
 
