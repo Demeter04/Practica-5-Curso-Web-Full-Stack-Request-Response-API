@@ -13,6 +13,7 @@ console.log("Hello world!");
 // En Packaje.json  "type":"module" para importar librerias de esta nueva forma sin errrores
 import express, { json, response } from "express"
 import bodyParser from "body-parser";
+import { ObjectId } from "mongodb";
 
 const app = express()
 const port = 3000 
@@ -204,6 +205,105 @@ app.post("/api/v1/usuarios/crear", async (req,res) => {
     })
 
 } )
+
+// OBTENER UN USUARIO POR ID UNICO
+
+app.get("/api/v1/usuarios/id/:id", async (req,res) => {
+
+    let id = req.params.id
+
+    // 1. -------------------------------- CONECTAR A mONGODB --------------------------------
+    await client.connect()
+
+    // 2. -------------------------------- CONECTAR A NUESTRA DATABASE o Documento --------------------------------
+    const dbSample_Mflix = client.db("sample_mflix")
+ 
+    // 3.  -------------------------------- ACCEDER A UNA COLLECTION  --------------------------------
+    const userCollection = dbSample_Mflix.collection("users")
+
+    // 4. -------------- AJUSTAR LA VARIABLE ID CON EL OBJECT ID QUE GUARDA MONGODB ----------------------------
+    id = new ObjectId(id)
+
+    // 5. ----------------- HACER LA CONSULTA ----------------------
+
+    const user = await userCollection.findOne({
+        _id: id
+
+    })
+
+    // 6. -------------------------- CERRAR LA CONEXION ---------------------
+
+    await client.close()
+
+    res.json({
+        mensaje: `Usuario obtenido con el id: ${id}`,
+        data: user
+    })
+
+    
+} )
+
+// ACTUALIZAR LOS DATOS DE UN USUARIO POR ID
+
+app.put("/api/v1/usuarios/act/:id", async (req,res) => {
+
+    let id = req.params.id
+
+    const userData = req.body
+
+    await client.connect()
+
+    const dbSample_Mflix = await client.db("sample_mflix")
+
+    const userCollection = dbSample_Mflix.collection("users")
+
+    id = new ObjectId(id)
+
+    await userCollection.updateOne(
+
+        // --------------- PRIMER FILTRO PARA ENCONTRAR EL OBJETO --------------
+        {_id: id}, 
+        {
+            $set:{
+                name: userData.name
+            }
+        }
+        
+    )
+
+    await client.close()
+
+    res.json({
+        mensaje: `usuario con id: ${id} actua`
+    })
+
+})
+
+
+// BORAR UN DATO DE UN ELEMENTO
+
+app.delete("/api/v1/usuarios/delt/:id", async (req,res ) => {
+
+    let id = req.params.id
+
+    await client.connect()
+
+    const dbSample_Mflix = await client.db("sample_mflix")
+
+    const userCollection = dbSample_Mflix.collection("users")
+
+    id = new ObjectId(id)
+
+    await userCollection.deleteOne({
+        _id: id
+    })
+
+    res.json({
+        mensaje: `Usuario con el id: ${id}, eliminado`
+    })
+
+
+})
 
 
 
